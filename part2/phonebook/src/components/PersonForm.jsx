@@ -1,8 +1,14 @@
+import { useEffect } from "react";
+import personService from "../services/person";
+import person from "../services/person";
+
 const PersonForm = ({
   persons,
   setPersons,
   newName,
+  setNewName,
   newNumber,
+  setNewNumber,
   handleNameChange,
   handleNumberChange,
 }) => {
@@ -12,15 +18,39 @@ const PersonForm = ({
     const nameObject = {
       name: newName,
       number: newNumber,
-      id: persons.length + 1,
     };
 
-    if (!persons.some((person) => person.name == newName)) {
-      setPersons(persons.concat(nameObject));
+    if (!persons.some((person) => person.name === newName)) {
+      personService.create(nameObject).then((response) => {
+        setPersons(persons.concat(response));
+        setNewName("");
+        setNewNumber("");
+      });
     } else {
-      let message = `${newName} is already added to phonebook`;
-      alert(message);
+      let confirmation = confirm(
+        `${newName} is already added to phonebook, replace the old number with a new one?`
+      );
+      if (confirmation) {
+        personService.getAll().then((response) => {
+          let toUpdate = response.filter((person) => person.name === newName);
+          personService
+            .update(toUpdate[0].id, nameObject)
+            .then((updateResponse) =>
+              setPersons(
+                persons.map((updatePerson) =>
+                  updatePerson.name === updateResponse.name
+                    ? updateResponse
+                    : updatePerson
+                )
+              )
+            );
+        });
+      }
     }
+
+    setNewName("");
+    setNewNumber("");
+    // alert(message);
   };
 
   return (

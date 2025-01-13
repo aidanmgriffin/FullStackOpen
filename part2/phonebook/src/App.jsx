@@ -1,21 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
-import { useEffect } from "react";
-import axios from "axios";
+import personService from "./services/person";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
-
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [newFilter, setNewFilter] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((response) => {
-      setPersons(response.data);
-    });
+    personService.getAll().then((initialNames) => setPersons(initialNames));
   }, []);
 
   const handleFilterChange = (event) => {
@@ -39,12 +35,14 @@ const App = () => {
         persons={persons}
         setPersons={setPersons}
         newName={newName}
+        setNewName={setNewName}
         newNumber={newNumber}
+        setNewNumber={setNewNumber}
         handleNameChange={handleNameChange}
         handleNumberChange={handleNumberChange}
       />
       <h2>Numbers</h2>
-      <Persons persons={persons} query={newFilter} />
+      <Persons persons={persons} setPersons={setPersons} query={newFilter} />
     </div>
   );
 };
