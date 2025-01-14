@@ -1,6 +1,4 @@
-import { useEffect } from "react";
 import personService from "../services/person";
-import person from "../services/person";
 
 const PersonForm = ({
   persons,
@@ -11,7 +9,24 @@ const PersonForm = ({
   setNewNumber,
   handleNameChange,
   handleNumberChange,
+  setSuccessMessage,
+  setErrorMessage,
 }) => {
+
+  const successNotification = (message) => {
+    setSuccessMessage(message);
+    setTimeout(() => {
+      setSuccessMessage(null);
+    }, 5000);
+  };
+
+  const errorNotification = (message) => {
+    setErrorMessage(message);
+    setTimeout(() => {
+      setErrorMessage(null);
+    }, 5000);
+  };
+
   const addName = (event) => {
     event.preventDefault();
 
@@ -23,34 +38,46 @@ const PersonForm = ({
     if (!persons.some((person) => person.name === newName)) {
       personService.create(nameObject).then((response) => {
         setPersons(persons.concat(response));
-        setNewName("");
-        setNewNumber("");
+        successNotification(`Added ${response.name}`);
       });
     } else {
-      let confirmation = confirm(
-        `${newName} is already added to phonebook, replace the old number with a new one?`
-      );
-      if (confirmation) {
-        personService.getAll().then((response) => {
-          let toUpdate = response.filter((person) => person.name === newName);
-          personService
-            .update(toUpdate[0].id, nameObject)
-            .then((updateResponse) =>
-              setPersons(
-                persons.map((updatePerson) =>
-                  updatePerson.name === updateResponse.name
-                    ? updateResponse
-                    : updatePerson
-                )
-              )
-            );
-        });
-      }
+      personService
+        .getAll()
+        .then((response) => {
+
+          let confirmation = confirm(
+            `${newName} is already added to phonebook, replace the old number with a new one?`
+          );
+          if (confirmation) {
+            let targetId = 0
+            persons.map((person) => person.name === newName ? targetId = person.id : targetId = targetId)
+            personService
+              .update(targetId, nameObject)
+              .then((updateResponse) => {
+                setPersons(
+                  persons.map((updatePerson) =>
+                    updatePerson.name === updateResponse.name
+                      ? updateResponse
+                      : updatePerson
+                  )
+                );
+                successNotification(`Updated ${updateResponse.name}`);
+              })
+              .catch((error) => {
+                console.log(error);
+                personService.getAll()
+                .then((response) => setPersons(response))
+      
+                errorNotification(
+                  `Information of ${newName} has already been removed from server`
+                );
+              });
+          }
+        })
     }
 
     setNewName("");
     setNewNumber("");
-    // alert(message);
   };
 
   return (
