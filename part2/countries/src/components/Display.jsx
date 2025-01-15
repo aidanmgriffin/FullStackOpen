@@ -1,29 +1,25 @@
-const Display = ({ countries }) => {
+import Country from "./Country";
+import Weather from "./Weather";
+
+const Display = ({ API_KEY, countries, handleShowButton }) => {
   if (countries.length > 0) {
     if (countries.length > 1) {
-      const countryNames = countries.map((country) => (
-        <li key={country.name.common}>{country.name.common}</li>
-      ));
       return (
         <div>
-          <ul>{countryNames}</ul>
+          <ul>
+            {countries.map((country) => (
+              <li key={country.ccn3}>
+                {country.name.common}{" "}
+                <button onClick={() => handleShowButton(country)}>show</button>
+              </li>
+            ))}
+          </ul>
         </div>
       );
-    } else if (countries.length === 1) {
+    }
+     else if (countries.length === 1) {
       return (
-        <div>
-          <h1>{countries[0].name.common}</h1> 
-          {" "}
-          <p>capital {countries[0].capital[0]}</p>
-          <p>area {countries[0].area}</p>
-          {" "}
-          <b>languages: </b>
-          <ul> {Object.values(countries[0].languages).map(language => <li key = {language}>{language}</li>)} </ul>
-          {" "}
-          <img src = {countries[0].flags.png}/>
-          
-
-        </div>
+        <Country API_KEY={API_KEY} country={countries[0]}/>
       );
     }
   } else {

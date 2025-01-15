@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Error from "./components/Error";
 import Display from "./components/Display";
+import Country from "./components/Country";
+const API_KEY = import.meta.env.VITE_SOME_KEY;
 
 function App() {
   const [value, setValue] = useState("");
@@ -10,15 +12,11 @@ function App() {
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    // console.log('effect run, country is now', country)
-
-    // skip if country is not defined
     if (country) {
       axios
         .get(`https://studies.cs.helsinki.fi/restcountries/api/name/${country}`)
         .then((response) => {
-          // console.log('response ', response.data)
-          setErrorMessage(null)
+          setErrorMessage(null);
           setCountries([response.data]);
         })
         .catch((error) => {
@@ -28,14 +26,13 @@ function App() {
               let filteredCountries = response.data.filter((n) =>
                 n.name.common.toLowerCase().includes(country.toLowerCase())
               );
-              if(filteredCountries.length === 0) {
-                setErrorMessage("No matches")
-                setCountries({})
-              }
-              else if (filteredCountries.length <= 10) {
-                setErrorMessage(null)
+              if (filteredCountries.length === 0) {
+                setErrorMessage("No matches");
+                setCountries({});
+              } else if (filteredCountries.length <= 10) {
+                setErrorMessage(null);
                 setCountries(filteredCountries);
-              } else {
+              } else if (filteredCountries.length > 10) {
                 setErrorMessage("Too many matches, specify another filter");
                 setCountries({});
               }
@@ -45,21 +42,24 @@ function App() {
   }, [country]);
 
   const handleChange = (event) => {
-    event.preventDefault()
+    // event.preventDefault()
     setValue(event.target.value);
     setCountry(event.target.value);
   };
 
-  const onSearch = (event) => {
-    event.preventDefault();
-    setCountry(value);
+  const handleShowButton = (country) => {
+    setCountry(country.name.common);
   };
 
   return (
     <div>
       find countries <input value={value} onChange={handleChange} />
       <Error message={errorMessage} />
-      <Display countries={countries} />
+      <Display
+        API_KEY={API_KEY}
+        countries={countries}
+        handleShowButton={handleShowButton}
+      />
     </div>
   );
 }
