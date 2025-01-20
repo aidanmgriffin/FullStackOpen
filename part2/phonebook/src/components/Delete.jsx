@@ -10,7 +10,8 @@ const Delete = ({ deletePerson, persons, setPersons }) => {
       personService
       .deleteId(deletePerson.id)
       .then((returned) => {
-        setPersons(persons.filter((person) => person.id !== returned.id))
+        setPersons(returned)
+        // setPersons(persons.filter((person) => person.id !== returned.id))
       })
       .catch( error => {
         console.log(`${deletePerson.name} has already been deleted - ${error}`)

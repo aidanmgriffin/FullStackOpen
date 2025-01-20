@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import DeletePerson from "./Delete";
 
 const Persons = ({ persons, setPersons, query }) => {
+
   const FilteredPersons = persons.map((person) =>
     person.name.toLowerCase().includes(query.toLowerCase())
   );
