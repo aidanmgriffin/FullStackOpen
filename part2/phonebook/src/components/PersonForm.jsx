@@ -39,6 +39,9 @@ const PersonForm = ({
       personService.create(nameObject).then((response) => {
         setPersons(persons.concat(response));
         successNotification(`Added ${response.name}`);
+      }).catch(error => {
+        console.log(error.response.data.error);
+        errorNotification(error.response.data.error)
       });
     } else {
       personService
@@ -69,7 +72,8 @@ const PersonForm = ({
                 .then((response) => setPersons(response))
       
                 errorNotification(
-                  `Information of ${newName} has already been removed from server`
+                  error.response.data.error
+                  // `Information of ${newName} has already been removed from server`
                 );
               });
           }

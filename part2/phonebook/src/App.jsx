@@ -51,7 +51,7 @@ const App = () => {
       <h2>Numbers</h2>
       <Persons persons={persons} setPersons={setPersons} query={newFilter} />
 
-      <p>Built by Aidan Griffin for the Full Stack Open course</p>
+      <p>Built by Aidan Griffin for the Full Stack Open course.</p>
     </div>
   );
 };
